@@ -1,16 +1,19 @@
 /******************************************************************
-* ！注意！                                                         *
-* 本头文件中为你封装了WinAPI中WIC底层函数，方便你进行图片读取而不必引  *
-* 入或安装其他的外部库，但是我们有一定的约束条件，请你仔细阅读以下规定  *
-*     本头文件中任何没有TO-DO的地方请你不要修改，若函数存在问题，      *
-* 请及时联系老师或助教！                                            *
-*     每一个TO-DO块以TO-DO：说明 (TO-DO) END 结束，具体可看下方代码  *
-*     readPic()函数为你封装了WinAPI中的方法，可以将图片读取为RGBA的   *
-* bitmap数据，但这并不代表你可以通过修改这个函数直接达到读取灰度图的   *
-* 目的。                                                           *
-*     getData()是你最终需要完善的函数，将读取出来的一维BYTE数组转换   *
-* 成你实现的Array类。                                              *
-*     testReader()是demo中提供读取数据的其中一个思路。               *
+* Note!                                                           *
+* This header file is a low-level function package for WinAPI     *
+* and WIC to handle image reading operations.                     *
+* This package is external, so you need to follow these rules:    *
+*     Do not modify any part of this header file without TO-DO,   *
+*     if you have any questions, please contact the teacher.      *
+*     Each TO-DO section is marked with TO-DO and TO-DO END.      *
+*     The readPic() function is a low-level WinAPI method that    *
+*     reads images as RGBA bitmap data. This cannot be modified   *
+*     directly to achieve grayscale image reading.                *
+*     The getData() function is a function that needs to be       *
+*     implemented to convert the one-dimensional BYTE array into  *
+*     the Array class you implemented.                            *
+*     The testReader() function is a demo that provides a         *
+*     reference for reading data.                                 *
 ******************************************************************/
 #ifndef PIC_READER_H
 #define PIC_READER_H
@@ -33,7 +36,7 @@ public:
 	~PicReader();
 
 	void readPic(LPCSTR);
-	Array /*TO-DO：可能你需要修改返回类型 END*/ getData(/*TO-DO：这里可能需要修改传参 END*/);
+	Array /*TO-DO: You need to modify the return type END*/ getData(/*TO-DO: You need to modify the parameters END*/);
 	void testReader(BYTE *&,UINT &, UINT &);
 private:
 	void init();
@@ -45,7 +48,7 @@ private:
 	IWICImagingFactory     *m_pIWICFactory;
 	IWICFormatConverter    *m_pConvertedSourceBitmap;
 
-	/*TO-DO：这里可能会增加你需要的内部成员 END*/
+	/*TO-DO: You may need to add internal members END*/
 };
 
 PicReader::PicReader() : m_pConvertedSourceBitmap(nullptr), m_pIWICFactory(nullptr) {
@@ -124,7 +127,7 @@ void PicReader::readPic(LPCSTR fileName) {
 	SafeRelease(pFrame);
 }
 
-Array /*TO-DO：可能你需要修改返回类型 END*/ PicReader::getData(/*TO-DO：这里可能需要修改传参 END*/) {
+Array /*TO-DO: You need to modify the return type END*/ PicReader::getData(/*TO-DO: You need to modify the parameters END*/) {
 	HRESULT hr = S_OK;
 
 	// Get the size of Image
@@ -145,13 +148,14 @@ Array /*TO-DO：可能你需要修改返回类型 END*/ PicReader::getData(/*TO-DO：这里可能
 	/******************************************************************
 	*  TO-DO:                                                         *
 	*                                                                 *
-	*  实现一个Array类，并将上面的data转存至你的Array内                  *
+	*  Implement an Array class to convert the data into your Array   *
 	*                                                                 *
-	*  数据说明：从Bitmap Copy出来的数据，每4个为一组代表一个像素         *
-	*           数据为一个长度为图像的(长*宽*4)的一维数组                *
-	*           即数据排布为 R G B A R G B A R G B A.....              *
+	*  Note: The Bitmap Copy data is stored in a one-dimensional      *
+	*        array of size (width*height*4), with stride of 4 bytes   *
+	*        per pixel in the order R G B A R G B A R G B A.....      *
 	*                                                                 *
-	*  ！注意！  你仅可以只改动从此开始到下一个TO-DO END位置的代码！       *
+	*  Note!  You can only modify the code from here to the next      *
+	*         TO-DO END position!                                     *
 	******************************************************************/
 
 	Array RGB_Data(y, x, (size_t)4);

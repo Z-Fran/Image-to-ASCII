@@ -7,26 +7,26 @@
 #pragma comment(lib,"winmm.lib")
 
 /*
-//	图片类
+//	Picture class
 */
 class Picture {
 protected:
 	PicReader imread;
-	Array rgb_data;//rgba数据(四维)
-	size_t x, y;//图片x、y方向宽度
-	size_t x_scale, y_scale;//图片x、y方向缩放比例
+	Array rgb_data;//rgba array (two-dimensional)
+	size_t x, y;//Image x and y dimensions
+	size_t x_scale, y_scale;//Image x and y scaling ratios
 public:
 	/****************************************
-	参数：fname图片文件名
-	功能：读取图片，并计算灰度值
+	Parameter: fname image file name
+	Function: Read image and calculate grayscale value
 	*****************************************/
 	Picture(char *fname) {
-		//读入图片数据
-		cout << "正在读入" << fname << ".....";
+		//Read image data
+		cout << "Reading " << fname << ".....";
 		imread.readPic(fname);
 		rgb_data = imread.getData();
 
-		//图片缩放
+		//Image scaling
 		x = rgb_data.shape[0];
 		y = rgb_data.shape[1];
 		x_scale = 1;
@@ -48,7 +48,7 @@ public:
 			}
 		}
 
-		//提前计算RGB值0-255每个数乘0.299、0.587、0.114的值
+		//Calculate RGB values 0-255 each multiplied by 0.299, 0.587, 0.114
 		double ratio[256][3];
 		for (int i = 0; i < 256; i++) {
 			ratio[i][0] = i * 0.299;
@@ -56,43 +56,43 @@ public:
 			ratio[i][2] = i * 0.114;
 		}
 
-		//RGB转灰度值，存在rgb_data第四维中
+		//Convert RGB to grayscale, reshape rgb_data to two dimensions
 		for (int i = 0; i < rgb_data.shape[0]; i += x_scale) {
 			for (int j = 0; j < rgb_data.shape[1]; j += y_scale) {
 				rgb_data[i][j][3] = int(ratio[rgb_data[i][j][0]][0] + ratio[rgb_data[i][j][1]][1] + ratio[rgb_data[i][j][2]][2]);
 			}
 		}
-		cout << "完成" << endl;
+		cout << "Done" << endl;
 	}
 
 	/****************************************
-	参数：style图片风格(0:无色ASCII图像;1:带前景色ASCII图像;2:带前景色和背景色ASCII图像)
-	功能：将图片转为字符画并显示
+	Parameter: style image style (0: black and white ASCII image; 1: foreground color ASCII image; 2: foreground and background color ASCII image)
+	Function: Convert image to character string and display
 	*****************************************/
 	void show(int style) {
-		cout << "正在处理.....";
-		//灰度分为15级
+		cout << "Processing.....";
+		//Divide grayscale into 15 levels
 		char asciiStrength[] = { 'M','N','H','Q','$','O','C','?','7','>','!',':','-',';','.' };
 		//char asciiStrength[] = "@%&M$#H8*X6ZQOUCL7>\![}(1|+;:-~'.";
 		
-		//绘图buffer申请内存空间
+		//Create buffer for image, allocate memory space
 		char* charBuffer = new(nothrow)char[2 * x * y];
 		BYTE* frontColorBuffer = new BYTE[2 * x * y * 3];
 		BYTE* backColorBuffer = new BYTE[2 * x * y * 3];
 		if (charBuffer == nullptr) {
-			cout << "字符数组申请内存空间失败！" << endl;
+			cout << "Character buffer memory allocation failed!" << endl;
 			exit(1);
 		}
 		if (frontColorBuffer == nullptr) {
-			cout << "字符数组申请内存空间失败！" << endl;
+			cout << "Character buffer memory allocation failed!" << endl;
 			exit(1);
 		}
 		if (backColorBuffer == nullptr) {
-			cout << "字符数组申请内存空间失败！" << endl;
+			cout << "Character buffer memory allocation failed!" << endl;
 			exit(1);
 		}
 
-		//灰度值转字符
+		//Convert grayscale values to characters
 		for (size_t i = 0; i < x; i++) {
 			for (size_t j = 0; j < y; j++) {
 				size_t iscale = i * x_scale;
@@ -107,9 +107,9 @@ public:
 				charBuffer[2 * (i * y + j)] = charBuffer[2 * (i * y + j)+1] = asciiStrength[asciiIndex];
 			}
 		}
-		cout << "完成" << endl;
+		cout << "Done" << endl;
 		
-		//显示图片
+		//Display image
 		FastPrinter printer(2 * y, x, 5);
 		if (style == 2) {
 			memcpy(backColorBuffer, frontColorBuffer, 2 * x * y * 3);
@@ -118,7 +118,7 @@ public:
 		printer.setData(charBuffer, frontColorBuffer, backColorBuffer);
 		printer.draw(style);
 		char c = getchar();
-		//释放内存空间
+		//Release memory space
 		delete[] charBuffer;
 		delete[] frontColorBuffer;
 		delete[] backColorBuffer;
@@ -126,39 +126,39 @@ public:
 };
 
 /*
-//	视频类
+//	Video class
 */
 class Video:protected Picture{
 public:
 	Video(char* filename):Picture(filename){}
 
 	/****************************************
-	参数：n 图片数量
-	功能：将视频转为字符画并显示
+	Parameter: n number of frames
+	Function: Convert video to character string and display
 	*****************************************/
 	void show(int n) {
 		char asciiStrength[] = { 'M','N','H','Q','$','O','C','?','7','>','!',':','-',';','.' };
-		//申请内存空间
+		//Allocate memory space
 		char* charBuffer = new(nothrow)char[2 * x * y];
 		BYTE* frontColorBuffer = new BYTE[2 * x * y * 3];
 		BYTE* backColorBuffer = new BYTE[2 * x * y * 3];
 		if (charBuffer == nullptr) {
-			cout << "字符数组申请内存空间失败！" << endl;
+			cout << "Character buffer memory allocation failed!" << endl;
 			exit(1);
 		}
 		if (frontColorBuffer == nullptr) {
-			cout << "字符数组申请内存空间失败！" << endl;
+			cout << "Character buffer memory allocation failed!" << endl;
 			exit(1);
 		}
 		if (backColorBuffer == nullptr) {
-			cout << "字符数组申请内存空间失败！" << endl;
+			cout << "Character buffer memory allocation failed!" << endl;
 			exit(1);
 		}
-		//设置前景色为黑色，背景色为白色
+		//Set foreground color to black, background color to white
 		memset(frontColorBuffer, 0, 2 * x * y * 3);
 		memset(backColorBuffer, 255, 2 * x * y * 3);
 
-		//提前计算RGB值0-255每个数乘0.299、0.587、0.114的值
+		//Calculate RGB values 0-255 each multiplied by 0.299, 0.587, 0.114
 		double ratio[256][3];
 		for (int i = 0; i < 256; i++) {
 			ratio[i][0] = i * 0.299;
@@ -166,20 +166,20 @@ public:
 			ratio[i][2] = i * 0.114;
 		}
 
-		//设置窗口
+		//Set up printer
 		FastPrinter printer(2 * y, x, 4);	
-		//播放声音
+		//Play sound
 		PlaySoundA("video\\1.wav", NULL, SND_FILENAME | SND_ASYNC);
-		Sleep(1000);//声音播放有一定的滞后
+		Sleep(1000);//Wait for sound to start
 
-		//遍历显示每一张图片
+		//Loop to display each frame
 		for (int ii = 1; ii <= n; ii++) {
 			clock_t t_start = clock();
 			char filename[] = { 'v','i','d','e','o','/','1',' ',char(ii / 100) + '0',char((ii % 100) / 10) + '0',char(ii % 10) + '0','.','j','p','g','\0' };
 			imread.readPic(filename);
 			rgb_data = imread.getData();
 
-			//计算灰度值
+			//Calculate grayscale values
 			for (size_t i = 0; i < (size_t)rgb_data.shape[0]; i += x_scale) {
 				for (size_t j = 0; j < (size_t)rgb_data.shape[1]; j += y_scale) {
 					//double sum = 0;
@@ -198,7 +198,7 @@ public:
 				}
 			}
 
-			//灰度值转换为ASCII字符
+			//Convert grayscale values to ASCII characters
 			for (size_t i = 0; i < x; i++) {
 				for (size_t j = 0; j < y; j++) {
 					size_t iscale = i * x_scale;
@@ -208,14 +208,14 @@ public:
 					charBuffer[2 * (i * y + j)] = charBuffer[2 * (i * y + j) + 1] = asciiStrength[asciiIndex];
 				}
 			}
-			//显示图片
+			//Display image
 			printer.cleanSrceen();
 			printer.setData(charBuffer, frontColorBuffer, backColorBuffer);
 			printer.draw(0);
 
-			//计算耗时
+			//Calculate time
 			size_t t = clock() - t_start;
-			//如果耗时大于40ms，则进行跳过若干帧，使音画同步
+			//If time exceeds 40ms, skip frames to maintain synchronization
 			if (t > 50) {
 				int k = t / 50;
 				t %= 50;
@@ -234,19 +234,19 @@ int main() {
 		"classic_picture/lena1.jpg" ,"classic_picture/milkdrop.jpg" ,"classic_picture/peppers.jpg","classic_picture/woman.jpg" };
 	char videoname[] = "video/1 001.jpg";
 	int choice;
-	cout << "-----欢迎使用图像转ASCII小程序-----" << endl;
-	cout << "--------0.显示无色ASCII图像--------" << endl;
-	cout << "------1.显示带前景色ASCII图像------" << endl;
-	cout << "--2.显示带前景色和背景色ASCII图像--" << endl;
+	cout << "-----Welcome to Image to ASCII Converter-----" << endl;
+	cout << "--------0.Display black and white ASCII image--------" << endl;
+	cout << "------1.Display foreground color ASCII image------" << endl;
+	cout << "--2.Display foreground and background color ASCII image--" << endl;
 	cout << "-----------------------------------" << endl;	
-	cout << "请输入选择：";
+	cout << "Please choose: ";
 	cin >> choice;
 	if (choice < 0 || choice>2) {
-		cout << "输入错误！" << endl;
+		cout << "Invalid input" << endl;
 		return 0;
 	}
 	char c = getchar();
-	//显示图片
+	//Display images
 	for (int i = 0; i < 11; i++) {
 		Picture p(fname[i]);
 		p.show(choice);

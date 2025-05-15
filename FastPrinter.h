@@ -1,8 +1,9 @@
 /******************************************************************
-* ！注意！                                                         *
-* 本头文件中为你封装了WinAPI中有关Console绘制的底层函数，可以帮助你快  *
-* 速绘制你想要的输出，效率比printf+cls高出很多。                     *
-* 函数使用详见demo.cpp中的几个示例。                                *
+* Note!                                                           *
+* This header file is a low-level function package for WinAPI     *
+* Console control. It can be used directly.                      *
+* It has much higher efficiency than printf+cls.                 *
+* Please refer to the example in demo.cpp for usage.             *
 ******************************************************************/
 #ifndef FAST_PRINTER_H
 #define FAST_PRINTER_H
@@ -11,9 +12,10 @@
 /******************************************************************
 *  TO-DO:                                                         *
 *                                                                 *
-*  本文件你可以自由进行修改，如将其中的一些接收参数设置为你实现的Array  *
-*  或为了配合你的实现进行一些便携化成员函数的编写等，甚至自己重新实现   *
-*  一个更高效的。                                                  *
+*  This file can be modified, such as replacing some unused       *
+*  functions with Array implementation, or implementing some      *
+*  additional member functions, etc. You can implement your own   *
+*  more efficient version.                                        *
 *                                                                 *
 ******************************************************************/
 
